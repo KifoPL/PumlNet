@@ -38,7 +38,7 @@ internal static class TypeExtensions
             string? name = type.Name;
 
             string typeNamespace
-                = options.IncludeOptions.IncludeInDiagram
+                = options.IncludeOptions.IncludeNamespace
                       ? (type.Namespace ?? "") + "."
                       : string.Empty;
 
@@ -53,7 +53,7 @@ internal static class TypeExtensions
         var genericArgumentNames = genericArguments.Select(x => x.GetTypeIdentifier(options))
                                                    .Select((x, i) => $"{i}{x.Split(".")[^1]}");
 
-        string typeName = options.IncludeOptions.IncludeInDiagram
+        string typeName = options.IncludeOptions.IncludeNamespace
                               ? genericType.FullName ?? genericType.Name
                               : genericType.Name;
         string genericTypeName = typeName.Split('`')[0];
@@ -71,6 +71,12 @@ internal static class TypeExtensions
                                                 => current == primitiveType.Key || current == primitiveType.Key + "[]"
                                                        ? current.Replace(primitiveType.Key, primitiveType.Value)
                                                        : current);
+        }
+        
+        if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
+        {
+            var nullableType = type.GetGenericArguments()[0];
+            return nullableType.GetPumlTypeName();
         }
 
         Type? genericType = type.GetGenericTypeDefinition();
