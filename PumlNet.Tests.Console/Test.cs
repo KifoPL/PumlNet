@@ -4,7 +4,7 @@ public class TestGeneric<TList, TItem> where TList : IList<TItem>
 {
 }
 
-public class Test : AbstractTest
+public class Test : AbstractTest, ISpecificTest
 {
     public static string? PublicProp { get; set; }
     private string[] PrivateProp { get; set; }
@@ -13,13 +13,45 @@ public class Test : AbstractTest
 
     public void DoStuff() {}
     
-    internal string? AnotherMethod(string param1, int param2)
+    internal string? AnotherMethod(string param1, int[] param2)
     {
         return param1 + param2;
     }
+
+    protected string[]? LastTest(IEnumerable<string> test)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public string TestProp { get; set; }
+
+    /// <inheritdoc />
+    public void TestMethod() => throw new NotImplementedException();
+
+    /// <inheritdoc />
+    public string Info { get; set; }
 }
 
 public abstract class AbstractTest
 {
     
+}
+
+public static class StaticTest
+{
+    public const string ConstString = "";
+    public static readonly string StaticReadonly = "";
+}
+
+public interface ITest
+{
+    public string TestProp { get; set; }
+    
+    public void TestMethod();
+}
+
+public interface ISpecificTest : ITest
+{
+    public string Info { get; set; }
 }

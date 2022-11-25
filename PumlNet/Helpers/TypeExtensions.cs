@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using PumlNet.Options;
 
@@ -14,8 +15,9 @@ internal static class TypeExtensions
             { IsNestedFamily  : true }  => "#",
             { IsNestedAssembly: true }  => "~",
             { IsVisible       : false } => "~",
-            _                                        => implicitPublic ? string.Empty : "+"
+            _                           => implicitPublic ? string.Empty : "+"
         };
+
     internal static string GetAccessor(this PropertyInfo propertyInfo, bool implicitPublic = false)
         => propertyInfo.GetMethod?.GetAccessor(implicitPublic) ?? (implicitPublic ? string.Empty : "+");
 
@@ -35,17 +37,23 @@ internal static class TypeExtensions
         {
             string? name = type.Name;
 
-            return (type.Namespace ?? "") + (type.Namespace is null ? string.Empty : ".") + PrimitiveTypes.Aggregate(name,
-                                                                     (current, primitiveType)
-                                                                         => current.Replace(primitiveType.Key, primitiveType.Value));
+            string typeNamespace
+                = options.IncludeOptions.IncludeInDiagram
+                      ? (type.Namespace ?? "") + "."
+                      : string.Empty;
+
+            return typeNamespace
+                 + PrimitiveTypes.Aggregate(name,
+                                            (current, primitiveType)
+                                                => current.Replace(primitiveType.Key, primitiveType.Value));
         }
 
         Type? genericType = type.GetGenericTypeDefinition();
         var genericArguments = type.GetGenericArguments();
         var genericArgumentNames = genericArguments.Select(x => x.GetTypeIdentifier(options))
-                                                   .Select((x, i) => $"{i}{x}");
+                                                   .Select((x, i) => $"{i}{x.Split(".")[^1]}");
 
-        string typeName = options.NamespaceOptions.IncludeInDiagram
+        string typeName = options.IncludeOptions.IncludeInDiagram
                               ? genericType.FullName ?? genericType.Name
                               : genericType.Name;
         string genericTypeName = typeName.Split('`')[0];
@@ -60,7 +68,9 @@ internal static class TypeExtensions
 
             return PrimitiveTypes.Aggregate(name,
                                             (current, primitiveType)
-                                                => current.Replace(primitiveType.Key, primitiveType.Value));
+                                                => current == primitiveType.Key || current == primitiveType.Key + "[]"
+                                                       ? current.Replace(primitiveType.Key, primitiveType.Value)
+                                                       : current);
         }
 
         Type? genericType = type.GetGenericTypeDefinition();
@@ -71,6 +81,65 @@ internal static class TypeExtensions
         string? genericTypeName = typeName.Split('`')[0];
         return $"{genericTypeName}<{string.Join(", ", genericArgumentNames)}>";
     }
+
+    internal static bool IsPumlClass(this Type type, PumlOptions options)
+    {
+        if (!type.IsClass) return false;
+        if (!options.IncludeOptions.IncludeInternal && !type.IsVisible) return false;
+
+        if (!type.IsPumlType(options)) return false;
+
+        return true;
+    }
+
+    internal static bool IsPumlInterface(this Type type, PumlOptions options)
+        => type.IsInterface && type.IsPumlType(options);
+
+    internal static bool IsPumlType(this Type type, PumlOptions options)
+    {
+        if (type.Name.StartsWith("<>c")) return false;
+
+        if (!options.IncludeOptions.IncludeCompilerGenerated)
+        {
+            if (type.CustomAttributes.Any(x => x.AttributeType == typeof(CompilerGeneratedAttribute))) return false;
+            if (type.IsSpecialName) return false;
+            if (type.Namespace?.StartsWith("Microsoft") ?? false) return false;
+            if (type.Namespace?.StartsWith("System") ?? false) return false;
+        }
+
+        return true;
+    }
+
+    internal static bool IsPumlType(this PropertyInfo propertyInfo, PumlOptions options)
+    {
+        if (propertyInfo.Name.StartsWith("<>c")) return false;
+
+        if (!options.IncludeOptions.IncludeCompilerGenerated)
+        {
+            if (propertyInfo.CustomAttributes.Any(x => x.AttributeType == typeof(CompilerGeneratedAttribute)))
+                return false;
+            if (propertyInfo.IsSpecialName) return false;
+        }
+
+        if (!options.IncludeOptions.IncludeInternal && (propertyInfo.GetMethod?.IsAssembly ?? false)) return false;
+
+        return true;
+    }
+
+    internal static bool IsPumlType(this MethodInfo methodInfo, PumlOptions options)
+    {
+        if (methodInfo.MemberType is not MemberTypes.Method) return false;
+        if (methodInfo.Name.StartsWith("get_") || methodInfo.Name.StartsWith("set_")) return false;
+        if (!options.IncludeOptions.IncludeInternal && methodInfo.IsAssembly) return false;
+        if (!options.IncludeOptions.IncludeCompilerGenerated
+         && methodInfo.CustomAttributes.Any(a => a.AttributeType == typeof(CompilerGeneratedAttribute))) return false;
+        if (!options.IncludeOptions.IncludeOverridenMethods && methodInfo.IsOverride()) return false;
+
+        return true;
+    }
+
+    internal static bool IsOverride(this MethodInfo methodInfo)
+        => methodInfo.GetBaseDefinition().DeclaringType != methodInfo.DeclaringType;
 
     internal static string NullOperator(this ParameterInfo param) => param.IsNullable() ? "?" : "";
 
@@ -93,6 +162,8 @@ internal static class TypeExtensions
 
         return nullabilityInfo.ReadState == NullabilityState.Nullable;
     }
+
+    internal static bool IsStatic(this Type type) => type.IsAbstract && type.IsSealed;
 
     private static readonly Dictionary<string, string> PrimitiveTypes = new()
     {

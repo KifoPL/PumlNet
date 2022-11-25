@@ -5,6 +5,7 @@ using PumlNet;
 using PumlNet.Generators;
 using PumlNet.Options;
 using PumlNet.Options.Styles;
+using PumlNet.Options.Styles.MemberDeclaration;
 using PumlNet.Tests.Console;
 
 var pumlOptions = new PumlOptions
@@ -17,18 +18,27 @@ var pumlOptions = new PumlOptions
     },
     StyleOptions =
     {
-        IndentType = IndentType.TwoSpaces
+        IndentType = IndentType.TwoSpaces,
+        Direction = Direction.LeftToRight,
+        MemberDeclarationOptions =
+        {
+            Style = MemberDeclarationStyle.TypeScript,
+        },
     },
-    NamespaceOptions =
+    IncludeOptions =
     {
-        IncludeInDiagram = true
+        IncludeInDiagram = true,
+        IncludeInternal = false,
+        IncludeOverridenMethods = false,
     }
 };
 
 var diagram = Puml.GeneratePumlDiagram(typeof(Puml).Assembly, pumlOptions);
 //var diagram = Puml.GeneratePumlDiagram<Test>(pumlOptions);
-//var diagram = Puml.GeneratePumlDiagram<BaseGenerator>(pumlOptions);
+//var diagram = Puml.GeneratePumlDiagram<AssociationGenerator>(pumlOptions);
 
 //var diagram = Puml.GeneratePumlDiagram(Assembly.GetExecutingAssembly(), pumlOptions);
 
 Console.WriteLine(diagram);
+
+File.WriteAllText("../../../diagram.puml", diagram);

@@ -1,0 +1,123 @@
+@startuml
+left to right direction
+hide empty members
+
+title
+My Title
+This is 2nd line of a title
+end title
+
+header
+My Header
+end header
+
+footer
+by Michał Sitek 2022-11-25
+end footer
+
+
+
+abstract class "Puml" as PumlNet.Puml << (S,#DAA520) >> {
+  -{static} GetPumlGenerator(sb: StringBuilder, options: PumlOptions): PumlGenerator
+  -{static} AppendHeader(sb: StringBuilder, options: PumlOptions): void
+  -{static} AppendFooter(sb: StringBuilder, options: PumlOptions): void
+  -{static} AppendStyles(sb: StringBuilder, options: PumlOptions): void
+  +{static} GeneratePumlDiagram(assembly: Assembly, options: PumlOptions?): string
+  +{static} GeneratePumlDiagram(options: PumlOptions?): string
+  -{static} GeneratePumlDiagram(types: IEnumerable<Type>, options: PumlOptions): string
+}
+
+class "PumlOptions" as PumlNet.Options.PumlOptions  {
+  +DiagramElements: DiagramElementOptions
+  +StyleOptions: StyleOptions
+  +IncludeOptions: IncludeOptions
+}
+
+abstract class "DirectionExtensions" as PumlNet.Options.Styles.DirectionExtensions << (S,#DAA520) >> {
+  +{static} AsStyle(direction: Direction): string
+}
+
+abstract class "StyleExtensions" as PumlNet.Options.Styles.StyleExtensions << (S,#DAA520) >> {
+  +{static} ToHex(color: Color): string
+}
+
+class "StyleOptions" as PumlNet.Options.Styles.StyleOptions  {
+  +Direction: Nullable<Direction>?
+  +IndentType: IndentType
+  +MarkAsStatic: bool
+  +StaticColor: Color
+  +HideEmptyMembers: bool
+  +HideEmptyMethods: bool
+  +HideEmptyProperties: bool
+  +MemberDeclarationOptions: MemberDeclarationOptions
+}
+
+abstract class "MemberDeclarationFormat" as PumlNet.Options.Styles.MemberDeclaration.MemberDeclarationFormat << (S,#DAA520) >> {
+  +{static} GetFormat(style: MemberDeclarationStyle): string
+}
+
+abstract class "MemberDeclarationKeys" as PumlNet.Options.Styles.MemberDeclaration.MemberDeclarationKeys << (S,#DAA520) >> {
+}
+
+class "MemberDeclarationOptions" as PumlNet.Options.Styles.MemberDeclaration.MemberDeclarationOptions  {
+  +Style: MemberDeclarationStyle
+  +Format: string
+}
+
+class "IncludeOptions" as PumlNet.Options.Namespace.IncludeOptions  {
+  +IncludeInDiagram: bool
+  +IncludeInternal: bool
+  +IncludeCompilerGenerated: bool
+  +IncludeOverridenMethods: bool
+  +IncludeStatic: bool
+}
+
+class "CaptionElement" as PumlNet.Options.DiagramElements.CaptionElement  {
+  +Content: PumlString
+  +{static} op_Implicit(value: string): CaptionElement
+}
+
+abstract class "DiagramElement" as PumlNet.Options.DiagramElements.DiagramElement  {
+  +Content: PumlString
+}
+
+class "DiagramElementOptions" as PumlNet.Options.DiagramElements.DiagramElementOptions  {
+  +Title: TitleElement?
+  +Header: HeaderElement?
+  +Footer: FooterElement?
+  +Caption: CaptionElement?
+  +Legend: LegendElement?
+}
+
+class "FooterElement" as PumlNet.Options.DiagramElements.FooterElement  {
+  +Content: PumlString
+  +{static} op_Implicit(value: string): FooterElement
+}
+
+class "HeaderElement" as PumlNet.Options.DiagramElements.HeaderElement  {
+  +Content: PumlString
+  +{static} op_Implicit(value: string): HeaderElement
+}
+
+class "LegendElement" as PumlNet.Options.DiagramElements.LegendElement  {
+  +Content: PumlString
+  +{static} op_Implicit(value: string): LegendElement
+}
+
+class "TitleElement" as PumlNet.Options.DiagramElements.TitleElement  {
+  +Content: PumlString
+  +{static} op_Implicit(value: string): TitleElement
+}
+
+abstract class "BaseGenerator" as PumlNet.Generators.BaseGenerator  {
+  +IndentationLevel: int
+}
+
+
+PumlNet.Options.DiagramElements.DiagramElement <|-- PumlNet.Options.DiagramElements.CaptionElement
+PumlNet.Options.DiagramElements.DiagramElement <|-- PumlNet.Options.DiagramElements.FooterElement
+PumlNet.Options.DiagramElements.DiagramElement <|-- PumlNet.Options.DiagramElements.HeaderElement
+PumlNet.Options.DiagramElements.DiagramElement <|-- PumlNet.Options.DiagramElements.LegendElement
+PumlNet.Options.DiagramElements.DiagramElement <|-- PumlNet.Options.DiagramElements.TitleElement
+
+@enduml
