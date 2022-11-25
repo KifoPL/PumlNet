@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PumlNet", "PumlNet\PumlNet.csproj", "{B57777FF-9DA4-4CEF-B1C3-08BA3AAAC8E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PumlNet.Tests", "PumlNet.Tests\PumlNet.Tests.csproj", "{ADC35E74-2CFA-434E-B53F-118CB6A1C080}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PumlNet.Tests.Console", "PumlNet.Tests.Console\PumlNet.Tests.Console.csproj", "{FF765B74-6C4E-4984-87B3-DAF9A9323CDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B57777FF-9DA4-4CEF-B1C3-08BA3AAAC8E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B57777FF-9DA4-4CEF-B1C3-08BA3AAAC8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B57777FF-9DA4-4CEF-B1C3-08BA3AAAC8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B57777FF-9DA4-4CEF-B1C3-08BA3AAAC8E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADC35E74-2CFA-434E-B53F-118CB6A1C080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADC35E74-2CFA-434E-B53F-118CB6A1C080}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADC35E74-2CFA-434E-B53F-118CB6A1C080}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADC35E74-2CFA-434E-B53F-118CB6A1C080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF765B74-6C4E-4984-87B3-DAF9A9323CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF765B74-6C4E-4984-87B3-DAF9A9323CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF765B74-6C4E-4984-87B3-DAF9A9323CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF765B74-6C4E-4984-87B3-DAF9A9323CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
