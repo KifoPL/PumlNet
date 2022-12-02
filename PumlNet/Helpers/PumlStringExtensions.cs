@@ -12,7 +12,7 @@ internal static class PumlStringExtensions
         { "\\", "\\\\" },
         { "\"", "\\\"" },
         { "\t", "\\t" },
-        { "\r", "\\r" },
+        { "\r", "\\r" }
     };
 
     private static readonly Dictionary<string, string> EscapingRules = EscapingRulesSingleLine
@@ -22,9 +22,9 @@ internal static class PumlStringExtensions
     internal static string Escape(this string unescapedString, EscapeType escapeType)
         => escapeType switch
         {
-            EscapeType.None => unescapedString,
+            EscapeType.None       => unescapedString,
             EscapeType.SingleLine => Escape(EscapingRules, unescapedString),
-            EscapeType.MultiLine => Escape(EscapingRulesMultiline, unescapedString),
+            EscapeType.MultiLine  => Escape(EscapingRulesMultiline, unescapedString),
             _ => throw new ArgumentOutOfRangeException(nameof(escapeType),
                                                        escapeType,
                                                        null)

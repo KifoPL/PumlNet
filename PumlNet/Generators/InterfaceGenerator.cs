@@ -11,7 +11,7 @@ internal class InterfaceGenerator : BaseGenerator
 
     internal void GenerateInterfaces(IEnumerable<Type> classes)
     {
-        foreach (var type in classes)
+        foreach (Type? type in classes)
         {
             if (!type.IsPumlInterface(Options)) continue;
 

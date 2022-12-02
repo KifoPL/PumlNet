@@ -19,6 +19,12 @@ internal class MemberGenerator : BaseGenerator
 
     internal void GenerateMembers(Type type, bool isInterface)
     {
+        if (type.IsEnum)
+        {
+            GenerateEnumValues(type);
+            return;
+        }
+
         var props = type.GetProperties(BindingFlags.Instance
                                      | BindingFlags.NonPublic
                                      | BindingFlags.Public
@@ -86,5 +92,15 @@ internal class MemberGenerator : BaseGenerator
                                   method.ReturnType.GetPumlTypeName() + method.ReturnParameter.NullOperator()));
 
         Sb.AppendLine();
+    }
+
+    internal void GenerateEnumValues(Type type)
+    {
+        foreach (object? value in Enum.GetValues(type))
+        {
+            Sb.AppendIndent(IndentationLevel, Options);
+            Sb.Append(value);
+            Sb.AppendLine();
+        }
     }
 }

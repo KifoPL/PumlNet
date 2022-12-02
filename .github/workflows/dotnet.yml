@@ -1,0 +1,49 @@
+name: Test CI
+on:
+  workflow_run:
+    workflows: ["Build CI"]
+    types:
+      - completed
+env:
+  DOTNET_VERSION: '6.0.x'
+jobs:
+  fail-if-error:
+    name: Fail if build failed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if build failed
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        run: exit 1
+  build-and-test:
+    name: build-and-test-${{matrix.os}}
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - uses: actions/cache@v2
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: unit tests for PumlNet
+      uses: zyborg/dotnet-tests-report@v1
+      with:
+        report_name: puml-net-tests
+        report_title: Puml.NET Tests
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        gist_name: puml-net-tests.md
+        gist_badge_label: 'Puml.NET Tests: %Counters_passed%/%Counters_total%'
+        gist_token: ${{ secrets.GIST_TOKEN }}
+        set_check_status_from_test_outcome: true
