@@ -14,7 +14,7 @@ public static class MemberDeclarationFormat
             MemberDeclarationStyle.DotNet     => DotNet,
             MemberDeclarationStyle.TypeScript => TypeScript,
             MemberDeclarationStyle.NoTypes    => NoTypes,
-            MemberDeclarationStyle.Custom => "CUSTOM OVERRIDE STRING",
+            MemberDeclarationStyle.Custom     => "CUSTOM OVERRIDE STRING",
             _ => throw new ArgumentOutOfRangeException(nameof(style),
                                                        style,
                                                        null)

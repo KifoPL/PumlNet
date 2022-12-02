@@ -12,10 +12,10 @@ internal sealed class ClassGenerator : BaseGenerator
 
     internal void GenerateClasses(IEnumerable<Type> classes)
     {
-        foreach (var type in classes)
+        foreach (Type type in classes)
         {
             if (!type.IsPumlClass(Options)) continue;
-            
+
             if (type.IsStatic() && !Options.IncludeOptions.IncludeStatic) continue;
 
             GenerateClass(type);
@@ -29,16 +29,23 @@ internal sealed class ClassGenerator : BaseGenerator
     internal void GenerateClass(Type type)
     {
         if (type.IsStatic() && !Options.IncludeOptions.IncludeStatic) return;
-        
+
         Sb.AppendIndent(IndentationLevel, Options);
 
         Sb.Append(type.GetAccessor(true));
 
-        if (type.IsAbstract)
-            Sb.Append("abstract ");
+        Sb.Append(ClassType(type));
 
-        Sb.Append($"class \"{type.GetPumlTypeName()}\" as "
-                + $"{type.GetTypeIdentifier(Options)} {(type.IsStatic() && Options.StyleOptions.MarkAsStatic ? $"<< (S,{Options.StyleOptions.StaticColor.ToHex()}) >>" : "")} {{");
+        Sb.Append($" \"{type.GetPumlTypeName()}\" as "
+                + $"{type.GetTypeIdentifier(Options)}");
+
+        if (type.IsValueType && !type.IsEnum) Sb.Append(" << (S,orange) struct >>");
+
+        if (type.IsStatic() && Options.StyleOptions.MarkAsStatic)
+            Sb.Append($" << (S,{Options.StyleOptions.StaticColor.ToHex()}) >>");
+
+        Sb.Append(" {");
+
         Sb.AppendLine();
 
 
@@ -47,6 +54,17 @@ internal sealed class ClassGenerator : BaseGenerator
         Sb.AppendIndent(IndentationLevel, Options);
         Sb.Append('}');
         Sb.AppendLine();
+    }
+
+    private string ClassType(Type type)
+    {
+        if (type.IsAbstract)
+            return "abstract class";
+
+        if (type.IsEnum)
+            return "enum";
+
+        return "class";
     }
 
     internal void GenerateClass<TClass>()

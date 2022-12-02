@@ -48,10 +48,9 @@ internal static class TypeExtensions
                                                 => current.Replace(primitiveType.Key, primitiveType.Value));
         }
 
-        Type? genericType = type.GetGenericTypeDefinition();
-        var genericArguments = type.GetGenericArguments();
-        var genericArgumentNames = genericArguments.Select(x => x.GetTypeIdentifier(options))
-                                                   .Select((x, i) => $"{i}{x.Split(".")[^1]}");
+        TypeInfo genericType = type.GetGenericTypeDefinition().GetTypeInfo();
+        var genericArgumentNames = genericType.GenericTypeParameters.Select(x => x.GetTypeIdentifier(options))
+                                              .Select((x, i) => $"{i}{x.Split(".")[^1]}");
 
         string typeName = options.IncludeOptions.IncludeNamespace
                               ? genericType.FullName ?? genericType.Name
@@ -72,10 +71,10 @@ internal static class TypeExtensions
                                                        ? current.Replace(primitiveType.Key, primitiveType.Value)
                                                        : current);
         }
-        
+
         if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
-            var nullableType = type.GetGenericArguments()[0];
+            Type nullableType = type.GetGenericArguments()[0];
             return nullableType.GetPumlTypeName();
         }
 
@@ -90,7 +89,7 @@ internal static class TypeExtensions
 
     internal static bool IsPumlClass(this Type type, PumlOptions options)
     {
-        if (!type.IsClass) return false;
+        if (!type.IsClass && !type.IsValueType) return false;
         if (!options.IncludeOptions.IncludeInternal && !type.IsVisible) return false;
 
         if (!type.IsPumlType(options)) return false;

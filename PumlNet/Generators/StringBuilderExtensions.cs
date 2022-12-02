@@ -10,7 +10,7 @@ internal static class StringBuilderExtensions
     internal static void AppendIndent(this StringBuilder sb, int indent, PumlOptions options)
     {
         if (indent <= 0) return;
-        
+
         switch (options.StyleOptions.IndentType)
         {
             case IndentType.Tab:

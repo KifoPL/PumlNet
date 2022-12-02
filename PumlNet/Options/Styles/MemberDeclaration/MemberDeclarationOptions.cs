@@ -2,8 +2,7 @@ namespace PumlNet.Options.Styles.MemberDeclaration;
 
 public class MemberDeclarationOptions
 {
-    public MemberDeclarationOptions() : this(MemberDeclarationStyle.Uml) {
-    }
+    public MemberDeclarationOptions() : this(MemberDeclarationStyle.Uml) { }
 
     public MemberDeclarationOptions(MemberDeclarationStyle style) { Style = style; }
 
@@ -15,10 +14,7 @@ public class MemberDeclarationOptions
         set
         {
             _style = value;
-            if (value is not MemberDeclarationStyle.Custom)
-            {
-                Format = MemberDeclarationFormat.GetFormat(value);
-            }
+            if (value is not MemberDeclarationStyle.Custom) Format = MemberDeclarationFormat.GetFormat(value);
         }
     }
 

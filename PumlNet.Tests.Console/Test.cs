@@ -11,43 +11,37 @@ public class Test : AbstractTest, ISpecificTest
     protected List<string> ProtectedProp { get; }
     internal string InternalProp { get; }
 
-    public void DoStuff() {}
-    
-    internal string? AnotherMethod(string param1, int[] param2)
-    {
-        return param1 + param2;
-    }
+    public void DoStuff() { }
 
-    protected string[]? LastTest(IEnumerable<string> test)
-    {
-        throw new NotImplementedException();
-    }
+    internal string? AnotherMethod(string param1, int[] param2) => param1 + param2;
 
-    /// <inheritdoc />
-    public string TestProp { get; set; }
-
-    /// <inheritdoc />
-    public void TestMethod() => throw new NotImplementedException();
+    protected string[]? LastTest(IEnumerable<string> test) => throw new NotImplementedException();
 
     /// <inheritdoc />
     public string Info { get; set; }
 }
 
-public abstract class AbstractTest
+public abstract class AbstractTest : ITest
 {
-    
+    /// <inheritdoc />
+    public string TestProp { get; set; }
+
+    /// <inheritdoc />
+    public void TestMethod() => throw new NotImplementedException();
 }
 
 public static class StaticTest
 {
     public const string ConstString = "";
     public static readonly string StaticReadonly = "";
+    public static ITest Test { get; set; }
+    public static TestGeneric<string[], string>? TestGeneric { get; set; }
 }
 
 public interface ITest
 {
     public string TestProp { get; set; }
-    
+
     public void TestMethod();
 }
 
