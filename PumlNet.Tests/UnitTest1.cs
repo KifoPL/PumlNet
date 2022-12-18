@@ -1,5 +1,4 @@
 using System.Reflection;
-using PumlNet;
 
 namespace PumlNet.Tests;
 

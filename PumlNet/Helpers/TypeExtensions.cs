@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using PumlNet.Options;
 
 namespace PumlNet.Helpers;
@@ -35,7 +34,7 @@ internal static class TypeExtensions
     {
         if (!type.IsGenericType)
         {
-            string? name = type.Name;
+            string name = type.Name;
 
             string typeNamespace
                 = options.IncludeOptions.IncludeNamespace
@@ -63,7 +62,7 @@ internal static class TypeExtensions
     {
         if (!type.IsGenericType)
         {
-            string? name = type.Name;
+            string name = type.Name;
 
             return PrimitiveTypes.Aggregate(name,
                                             (current, primitiveType)
@@ -78,23 +77,21 @@ internal static class TypeExtensions
             return nullableType.GetPumlTypeName();
         }
 
-        Type? genericType = type.GetGenericTypeDefinition();
+        Type genericType = type.GetGenericTypeDefinition();
         var genericArguments = type.GetGenericArguments();
         var genericArgumentNames = genericArguments.Select(GetPumlTypeName);
 
-        string? typeName = genericType.Name;
-        string? genericTypeName = typeName.Split('`')[0];
+        string typeName = genericType.Name;
+        string genericTypeName = typeName.Split('`')[0];
         return $"{genericTypeName}<{string.Join(", ", genericArgumentNames)}>";
     }
 
     internal static bool IsPumlClass(this Type type, PumlOptions options)
     {
-        if (!type.IsClass && !type.IsValueType) return false;
+        if (type is { IsClass: false, IsValueType: false }) return false;
         if (!options.IncludeOptions.IncludeInternal && !type.IsVisible) return false;
 
-        if (!type.IsPumlType(options)) return false;
-
-        return true;
+        return type.IsPumlType(options);
     }
 
     internal static bool IsPumlInterface(this Type type, PumlOptions options)
@@ -143,14 +140,14 @@ internal static class TypeExtensions
         return true;
     }
 
-    internal static bool IsOverride(this MethodInfo methodInfo)
+    public static bool IsOverride(this MethodInfo methodInfo)
         => methodInfo.GetBaseDefinition().DeclaringType != methodInfo.DeclaringType;
 
     internal static string NullOperator(this ParameterInfo param) => param.IsNullable() ? "?" : "";
 
     internal static string NullOperator(this PropertyInfo prop) => prop.IsNullable() ? "?" : "";
 
-    internal static bool IsNullable(this ParameterInfo param)
+    public static bool IsNullable(this ParameterInfo param)
     {
         NullabilityInfoContext nullabilityInfoContext = new();
 
@@ -159,7 +156,7 @@ internal static class TypeExtensions
         return nullabilityInfo.ReadState == NullabilityState.Nullable;
     }
 
-    internal static bool IsNullable(this PropertyInfo prop)
+    public static bool IsNullable(this PropertyInfo prop)
     {
         NullabilityInfoContext nullabilityInfoContext = new();
 
@@ -168,7 +165,7 @@ internal static class TypeExtensions
         return nullabilityInfo.ReadState == NullabilityState.Nullable;
     }
 
-    internal static bool IsStatic(this Type type) => type.IsAbstract && type.IsSealed;
+    internal static bool IsStatic(this Type type) => type is { IsAbstract: true, IsSealed: true };
 
     private static readonly Dictionary<string, string> PrimitiveTypes = new()
     {
